@@ -158,6 +158,67 @@ function extractName(text, ibanIndex) {
 }
 
 // =============================================================================
+// EPC payload assembly, validation, and orchestrator
+// =============================================================================
+
+/**
+ * Formats an EPC QR payload string (EPC069-12 v3.1, 12-line, LF-separated).
+ * @param {{ iban: string, name: string, amount: number|null, bic?: string, remittance?: string }} fields
+ * @returns {string}
+ */
+function formatEPCPayload(fields) {
+  var iban = fields.iban, name = fields.name, amount = fields.amount;
+  var bic = fields.bic || '', remittance = fields.remittance || '';
+  if (!iban || !name) throw new Error('IBAN and name are required');
+  var lines = [
+    'BCD',                                                    // Line 1: Service tag
+    '002',                                                    // Line 2: Version (BIC optional)
+    '1',                                                      // Line 3: Character set UTF-8
+    'SCT',                                                    // Line 4: SEPA Credit Transfer
+    bic.trim().substring(0, 11),                              // Line 5: BIC (blank = omitted)
+    name.substring(0, 70),                                    // Line 6: Beneficiary name
+    iban.replace(/\s/g, '').toUpperCase(),                    // Line 7: Beneficiary IBAN
+    amount != null ? 'EUR' + amount.toFixed(2) : '',          // Line 8: Amount (blank if unknown)
+    '',                                                       // Line 9: Purpose code (blank)
+    '',                                                       // Line 10: Structured remittance (blank)
+    remittance.substring(0, 140),                             // Line 11: Unstructured remittance
+    ''                                                        // Line 12: Originator info (blank)
+  ];
+  return lines.join('\n');
+}
+
+/**
+ * Validates an EPC payload string (byte count, header check).
+ * @param {string} payload
+ * @returns {{ valid: boolean, byteCount: number, errors: string[] }}
+ */
+function validateEPCPayload(payload) {
+  var byteCount = new TextEncoder().encode(payload).length;
+  var errors = [];
+  if (byteCount > 331) {
+    errors.push('Payload exceeds 331-byte EPC limit (' + byteCount + ' bytes)');
+  }
+  if (!payload.startsWith('BCD\n002\n1\nSCT\n')) {
+    errors.push('Invalid EPC header');
+  }
+  return { valid: byteCount <= 331 && errors.length === 0, byteCount: byteCount, errors: errors };
+}
+
+/**
+ * Orchestrates extraction: normalizes text, extracts IBAN, amount, and name.
+ * @param {string} text
+ * @returns {{ iban: string|null, name: string|null, amount: number|null }}
+ */
+function parsePaymentText(text) {
+  var normalized = normalizeText(text);
+  var iban = extractIBAN(normalized);
+  var amount = extractAmount(normalized);
+  var ibanIndex = iban ? normalized.toUpperCase().indexOf(iban.substring(0, 4)) : -1;
+  var name = extractName(normalized, ibanIndex);
+  return { iban: iban, name: name, amount: amount };
+}
+
+// =============================================================================
 // Test harness — call runTests() from the browser console
 // =============================================================================
 
