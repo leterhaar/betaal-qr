@@ -6,6 +6,9 @@
 </head>
 <body>
 <!-- UI comes in Phase 2 -->
+<div id="qr-output"></div>
+<script src="lib/qrcode.js"></script>
+<script src="lib/qrcode_UTF8.js"></script>
 
 <script>
 // =============================================================================
@@ -205,6 +208,23 @@ function validateEPCPayload(payload) {
 }
 
 /**
+ * Renders an EPC payload string as an SVG QR code into a container element.
+ * @param {string} payloadString
+ * @param {Element} [containerElement] - defaults to #qr-output
+ * @returns {string} SVG markup
+ */
+function renderQR(payloadString, containerElement) {
+  if (!containerElement) {
+    containerElement = document.getElementById('qr-output');
+  }
+  var qr = qrcode(0, 'M');  // typeNumber 0 = auto-detect; ECC level M
+  qr.addData(payloadString);
+  qr.make();
+  containerElement.innerHTML = qr.createSvgTag({ cellSize: 2, margin: 4, scalable: true });
+  return containerElement.innerHTML;
+}
+
+/**
  * Orchestrates extraction: normalizes text, extracts IBAN, amount, and name.
  * @param {string} text
  * @returns {{ iban: string|null, name: string|null, amount: number|null }}
@@ -270,6 +290,29 @@ function runTests() {
     extractName('naam: ' + 'A'.repeat(80)).length,
     70
   );
+
+  // --- formatEPCPayload ---
+  assert('EPC 12 lines',       formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n').length, 12);
+  assert('EPC starts with BCD',formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n')[0], 'BCD');
+  assert('EPC version 002',    formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n')[1], '002');
+  assert('EPC charset UTF-8',  formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n')[2], '1');
+  assert('EPC SCT',            formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n')[3], 'SCT');
+  assert('EPC amount format',  formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).split('\n')[7], 'EUR100.00');
+  assert('EPC null amount blank', formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:null}).split('\n')[7], '');
+  assert('EPC no CRLF',        formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100}).indexOf('\r'), -1);
+
+  // --- validateEPCPayload ---
+  assert('EPC valid payload',    validateEPCPayload(formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100})).valid, true);
+  assert('EPC byte count type',  typeof validateEPCPayload(formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:100})).byteCount, 'number');
+
+  // --- parsePaymentText ---
+  assert('parse full text IBAN',   parsePaymentText('Betaal aan NL91 ABNA 0417 1643 00 bedrag EUR 50,00').iban, 'NL91ABNA0417164300');
+  assert('parse full text amount', parsePaymentText('Betaal aan NL91 ABNA 0417 1643 00 bedrag EUR 50,00').amount, 50);
+
+  // --- QR library and end-to-end ---
+  assert('QR library loaded', typeof qrcode, 'function');
+  var svgOutput = renderQR(formatEPCPayload({iban:'NL91ABNA0417164300', name:'Acme B.V.', amount:25.50}));
+  assert('renderQR produces SVG', svgOutput.indexOf('<svg') !== -1, true);
 
   console.log('\n' + passed + ' passed, ' + failed + ' failed');
   return { passed: passed, failed: failed };
