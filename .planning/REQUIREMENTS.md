@@ -76,29 +76,29 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| EXTR-01 | Pending | Pending |
-| EXTR-02 | Pending | Pending |
-| EXTR-03 | Pending | Pending |
-| EXTR-04 | Pending | Pending |
-| FLDS-01 | Pending | Pending |
-| FLDS-02 | Pending | Pending |
-| FLDS-03 | Pending | Pending |
-| FLDS-04 | Pending | Pending |
-| FLDS-05 | Pending | Pending |
-| QRCD-01 | Pending | Pending |
-| QRCD-02 | Pending | Pending |
-| QRCD-03 | Pending | Pending |
-| QRCD-04 | Pending | Pending |
-| QRCD-05 | Pending | Pending |
-| GENL-01 | Pending | Pending |
-| GENL-02 | Pending | Pending |
-| GENL-03 | Pending | Pending |
+| EXTR-01 | Phase 2 | Pending |
+| EXTR-02 | Phase 1 | Pending |
+| EXTR-03 | Phase 1 | Pending |
+| EXTR-04 | Phase 1 | Pending |
+| FLDS-01 | Phase 2 | Pending |
+| FLDS-02 | Phase 1 | Pending |
+| FLDS-03 | Phase 1 | Pending |
+| FLDS-04 | Phase 2 | Pending |
+| FLDS-05 | Phase 2 | Pending |
+| QRCD-01 | Phase 1 | Pending |
+| QRCD-02 | Phase 2 | Pending |
+| QRCD-03 | Phase 1 | Pending |
+| QRCD-04 | Phase 2 | Pending |
+| QRCD-05 | Phase 2 | Pending |
+| GENL-01 | Phase 1 | Pending |
+| GENL-02 | Phase 2 | Pending |
+| GENL-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 17 total
-- Mapped to phases: 0
-- Unmapped: 17 ⚠️
+- Mapped to phases: 17
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-23*
-*Last updated: 2026-03-23 after initial definition*
+*Last updated: 2026-03-23 after roadmap creation*
