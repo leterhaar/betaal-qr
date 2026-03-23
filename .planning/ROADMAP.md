@@ -26,7 +26,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. `formatEPCPayload()` produces an exactly-12-line string with LF line endings, version 002, amount as `EURnnn.nn`, and blank placeholders for omitted optional fields
   3. `validateFields()` rejects an IBAN that fails MOD-97 checksum and accepts one that passes, with an inline-ready error message string
   4. The single `index.html` file opens in a browser without a server and without errors in the console
-**Plans**: TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Text extraction functions (IBAN, amount, name) with MOD-97 validation and inline test harness
+- [ ] 01-02-PLAN.md — EPC payload assembly, byte-limit validation, QR library integration, end-to-end pipeline
 
 ### Phase 2: Full App
 **Goal**: The complete product — user pastes invoice text, fields auto-populate, user confirms or corrects, generates a scannable EPC QR code
@@ -48,5 +52,5 @@ Phases execute in numeric order: 1 → 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Core Logic | 0/? | Not started | - |
+| 1. Core Logic | 0/2 | Not started | - |
 | 2. Full App | 0/? | Not started | - |
