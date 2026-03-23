@@ -10,15 +10,15 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Extraction
 
 - [ ] **EXTR-01**: User can paste invoice/email text into a text area
-- [ ] **EXTR-02**: App extracts IBAN from pasted text using regex pattern matching
-- [ ] **EXTR-03**: App extracts payment amount from pasted text (handles €1.234,56 / EUR 1234.56 / 1,234.56 formats)
-- [ ] **EXTR-04**: App extracts counterparty name from pasted text using heuristics (proximity to IBAN, labeled fields like "t.n.v.", "begunstigde")
+- [x] **EXTR-02**: App extracts IBAN from pasted text using regex pattern matching
+- [x] **EXTR-03**: App extracts payment amount from pasted text (handles €1.234,56 / EUR 1234.56 / 1,234.56 formats)
+- [x] **EXTR-04**: App extracts counterparty name from pasted text using heuristics (proximity to IBAN, labeled fields like "t.n.v.", "begunstigde")
 
 ### Payment Fields
 
 - [ ] **FLDS-01**: User can review and edit extracted IBAN, name, and amount in form fields
-- [ ] **FLDS-02**: IBAN is validated using MOD-97 checksum with inline error display
-- [ ] **FLDS-03**: Beneficiary name field enforces 70-character EPC limit
+- [x] **FLDS-02**: IBAN is validated using MOD-97 checksum with inline error display
+- [x] **FLDS-03**: Beneficiary name field enforces 70-character EPC limit
 - [ ] **FLDS-04**: User can enter unstructured remittance info (free-text, max 140 chars)
 - [ ] **FLDS-05**: User can optionally enter BIC/SWIFT code (hidden by default, expandable)
 
@@ -77,12 +77,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | EXTR-01 | Phase 2 | Pending |
-| EXTR-02 | Phase 1 | Pending |
-| EXTR-03 | Phase 1 | Pending |
-| EXTR-04 | Phase 1 | Pending |
+| EXTR-02 | Phase 1 | Complete |
+| EXTR-03 | Phase 1 | Complete |
+| EXTR-04 | Phase 1 | Complete |
 | FLDS-01 | Phase 2 | Pending |
-| FLDS-02 | Phase 1 | Pending |
-| FLDS-03 | Phase 1 | Pending |
+| FLDS-02 | Phase 1 | Complete |
+| FLDS-03 | Phase 1 | Complete |
 | FLDS-04 | Phase 2 | Pending |
 | FLDS-05 | Phase 2 | Pending |
 | QRCD-01 | Phase 1 | Pending |

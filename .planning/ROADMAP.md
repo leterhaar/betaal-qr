@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Text extraction functions (IBAN, amount, name) with MOD-97 validation and inline test harness
+- [x] 01-01-PLAN.md — Text extraction functions (IBAN, amount, name) with MOD-97 validation and inline test harness
 - [ ] 01-02-PLAN.md — EPC payload assembly, byte-limit validation, QR library integration, end-to-end pipeline
 
 ### Phase 2: Full App

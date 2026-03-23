@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-23T14:13:09.970Z"
-last_activity: 2026-03-23 — Roadmap created
+status: Ready to execute
+stopped_at: Completed 01-core-logic-01-PLAN.md
+last_updated: "2026-03-23T14:31:09.385Z"
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 2
+  completed_plans: 1
 ---
 
 # Project State
@@ -21,16 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-23)
 
 **Core value:** Paste text, get a scannable payment QR code — no manual data entry into your bank app.
-**Current focus:** Phase 1 — Core Logic
+**Current focus:** Phase 01 — core-logic
 
 ## Current Position
 
-Phase: 1 of 2 (Core Logic)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-03-23 — Roadmap created
-
-Progress: [░░░░░░░░░░] 0%
+Phase: 01 (core-logic) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -52,6 +46,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01-core-logic P01 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -62,6 +57,9 @@ Recent decisions affecting current work:
 
 - Initialization: Build inside-out — pure logic first (Phase 1), UI second (Phase 2)
 - Initialization: qrcode-generator (v1.4.4) vendored locally at /lib/qrcode.min.js to support offline/file:// use
+- [Phase 01-core-logic]: Regex/pattern matching (no AI/LLM) for extraction — offline, free, sufficient for structured payment data
+- [Phase 01-core-logic]: First valid IBAN wins when multiple IBANs found; extractAmount returns last valid match (totals at bottom)
+- [Phase 01-core-logic]: extractName returns null on no match rather than guessing — Phase 2 UI prompts user to correct
 
 ### Pending Todos
 
@@ -75,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T14:13:09.965Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-core-logic/01-CONTEXT.md
+Last session: 2026-03-23T14:31:09.381Z
+Stopped at: Completed 01-core-logic-01-PLAN.md
+Resume file: None
