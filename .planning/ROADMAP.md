@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Text extraction functions (IBAN, amount, name) with MOD-97 validation and inline test harness
-- [ ] 01-02-PLAN.md — EPC payload assembly, byte-limit validation, QR library integration, end-to-end pipeline
+- [x] 01-02-PLAN.md — EPC payload assembly, byte-limit validation, QR library integration, end-to-end pipeline
 
 ### Phase 2: Full App
 **Goal**: The complete product — user pastes invoice text, fields auto-populate, user confirms or corrects, generates a scannable EPC QR code

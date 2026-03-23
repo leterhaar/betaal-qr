@@ -24,17 +24,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### QR Generation
 
-- [ ] **QRCD-01**: App generates valid EPC QR code (v002, UTF-8, BIC optional) from confirmed fields
+- [x] **QRCD-01**: App generates valid EPC QR code (v002, UTF-8, BIC optional) from confirmed fields
 - [ ] **QRCD-02**: QR code displays at scannable size (min 200x200px)
-- [ ] **QRCD-03**: App validates payload does not exceed 331-byte EPC limit before generating
+- [x] **QRCD-03**: App validates payload does not exceed 331-byte EPC limit before generating
 - [ ] **QRCD-04**: QR code is scannable by Dutch banking apps (ING, Rabobank, ABN AMRO)
 - [ ] **QRCD-05**: User can copy QR code image to clipboard
 
 ### General
 
-- [ ] **GENL-01**: App runs as a single static HTML+JS file — open index.html in any modern browser
+- [x] **GENL-01**: App runs as a single static HTML+JS file — open index.html in any modern browser
 - [ ] **GENL-02**: App supports dark/light mode following OS color scheme preference
-- [ ] **GENL-03**: All processing is client-side — no data leaves the browser
+- [x] **GENL-03**: All processing is client-side — no data leaves the browser
 
 ## v2 Requirements
 
@@ -85,14 +85,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FLDS-03 | Phase 1 | Complete |
 | FLDS-04 | Phase 2 | Pending |
 | FLDS-05 | Phase 2 | Pending |
-| QRCD-01 | Phase 1 | Pending |
+| QRCD-01 | Phase 1 | Complete |
 | QRCD-02 | Phase 2 | Pending |
-| QRCD-03 | Phase 1 | Pending |
+| QRCD-03 | Phase 1 | Complete |
 | QRCD-04 | Phase 2 | Pending |
 | QRCD-05 | Phase 2 | Pending |
-| GENL-01 | Phase 1 | Pending |
+| GENL-01 | Phase 1 | Complete |
 | GENL-02 | Phase 2 | Pending |
-| GENL-03 | Phase 1 | Pending |
+| GENL-03 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 17 total
