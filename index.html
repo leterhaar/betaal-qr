@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Betaal QR</title>
+</head>
+<body>
+<!-- UI comes in Phase 2 -->
+
+<script>
+// =============================================================================
+// Phase 1: Core extraction and validation functions
+// All functions are pure (no DOM access, no side effects, no network calls).
+// Accessible from the browser console at window scope.
+// =============================================================================
+
+/**
+ * Normalizes raw copy-pasted text by removing/replacing Unicode artifacts.
+ * @param {string} raw
+ * @returns {string}
+ */
+function normalizeText(raw) {
+  return raw
+    .replace(/\u00A0/g, ' ')          // non-breaking space -> regular space
+    .replace(/\u00AD/g, '')            // soft hyphen -> remove
+    .replace(/[\u2013\u2014]/g, '-')   // en-dash, em-dash -> ASCII hyphen
+    .replace(/\u200B/g, '')            // zero-width space -> remove
+    .trim();
+}
+
+/**
+ * Validates an IBAN string using the ISO 13616 MOD-97 algorithm.
+ * @param {string} iban - Normalized IBAN (no spaces, uppercase)
+ * @returns {boolean}
+ */
+function validateIBAN(iban) {
+  // Rearrange: move first 4 chars to end
+  var rearranged = iban.slice(4) + iban.slice(0, 4);
+  // Convert letters to digits: A=10, B=11, ..., Z=35
+  var digits = rearranged.split('').map(function(ch) {
+    var code = ch.charCodeAt(0);
+    return (code >= 65 && code <= 90) ? String(code - 55) : ch;
+  }).join('');
+  // Iterative mod-97 (avoids BigInt requirements)
+  var remainder = 0;
+  for (var i = 0; i < digits.length; i++) {
+    remainder = (remainder * 10 + parseInt(digits[i], 10)) % 97;
+  }
+  return remainder === 1;
+}
+
+/**
+ * Extracts the first valid IBAN from text (space-tolerant, MOD-97 validated).
+ * @param {string} text
+ * @returns {string|null}
+ */
+function extractIBAN(text) {
+  var normalized = normalizeText(text);
+  // Allow optional spaces between IBAN groups (common Dutch invoice format)
+  var pattern = /\b([A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}\s?[A-Z0-9]{0,3})\b/gi;
+  var candidates = [];
+  var m;
+  while ((m = pattern.exec(normalized.toUpperCase())) !== null) {
+    var candidate = m[1].replace(/\s/g, '').toUpperCase();
+    if (candidate.length >= 15 && candidate.length <= 34) {
+      candidates.push(candidate);
+    }
+  }
+  // Return first MOD-97 valid candidate (per user constraint: first one wins)
+  for (var j = 0; j < candidates.length; j++) {
+    if (validateIBAN(candidates[j])) {
+      return candidates[j];
+    }
+  }
+  return null;
+}
+
+/**
+ * Parses an amount string, handling both Dutch (1.234,56) and English (1,234.56) locales.
+ * @param {string} s
+ * @returns {number|null}
+ */
+function parseAmountString(s) {
+  var lastComma = s.lastIndexOf(',');
+  var lastDot   = s.lastIndexOf('.');
+  var normalized;
+  if (lastComma > lastDot) {
+    // Dutch locale: comma is decimal separator (e.g. 1.234,56)
+    normalized = s.replace(/\./g, '').replace(',', '.');
+  } else {
+    // English locale: dot is decimal separator (e.g. 1,234.56)
+    normalized = s.replace(/,/g, '');
+  }
+  var value = parseFloat(normalized);
+  if (isNaN(value) || value < 0.01 || value > 999999999.99) return null;
+  return Math.round(value * 100) / 100; // avoid float drift
+}
+
+/**
+ * Extracts the payment amount from text, anchored to currency signals.
+ * Prefers the last valid match (invoice totals appear at the bottom).
+ * @param {string} text
+ * @returns {number|null}
+ */
+function extractAmount(text) {
+  var normalized = normalizeText(text);
+  var pattern = /(?:€|EUR|euro)\s*([\d.,]+)|(?:te\s+betalen|totaal|total|bedrag|amount\s+due)\s*:?\s*([\d.,]+)/gi;
+  var lastMatch = null;
+  var m;
+  while ((m = pattern.exec(normalized)) !== null) {
+    var raw = (m[1] || m[2]).trim();
+    var value = parseAmountString(raw);
+    if (value !== null) lastMatch = value;
+  }
+  return lastMatch;
+}
+
+/**
+ * Extracts the beneficiary name from text using Dutch label heuristics and
+ * IBAN proximity as fallback. Enforces the 70-character EPC limit (FLDS-03).
+ * @param {string} text
+ * @param {number} [ibanIndex] - Character index of the IBAN in the original text (optional)
+ * @returns {string|null}
+ */
+function extractName(text, ibanIndex) {
+  var normalized = normalizeText(text);
+
+  // Step 1 — Label matching (Dutch and English label heuristics)
+  var labelPattern = /(?:t\.?\s?n\.?\s?v\.?|begunstigde|ten\s+name\s+van|naam|name|beneficiary)\s*:?\s*(.+)/gi;
+  var m;
+  while ((m = labelPattern.exec(normalized)) !== null) {
+    var capture = m[1].trim();
+    if (capture) {
+      return capture.substring(0, 70);
+    }
+  }
+
+  // Step 2 — IBAN proximity fallback: look at the line immediately before the IBAN
+  if (ibanIndex !== undefined && ibanIndex !== null) {
+    var textBefore = normalized.substring(0, ibanIndex);
+    var lines = textBefore.split('\n');
+    // Walk backwards to find the last non-empty line
+    for (var i = lines.length - 1; i >= 0; i--) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      // Skip lines that look like labels rather than names
+      var looksLikeLabel = /^(rekeningnummer|iban|bic|swift|bank|rekening)\s*:?$/i.test(line);
+      var hasOnlyColon = /^[^a-z0-9]*:?\s*$/i.test(line);
+      if (!looksLikeLabel && !hasOnlyColon) {
+        return line.substring(0, 70);
+      }
+      break;
+    }
+  }
+
+  // Step 3 — Nothing found; user will edit in Phase 2
+  return null;
+}
+
+// =============================================================================
+// Test harness — call runTests() from the browser console
+// =============================================================================
+
+function runTests() {
+  var passed = 0, failed = 0;
+
+  function assert(label, actual, expected) {
+    if (actual === expected) {
+      console.log('PASS: ' + label);
+      passed++;
+    } else {
+      console.error('FAIL: ' + label + ' — expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual));
+      failed++;
+    }
+  }
+
+  // --- normalizeText ---
+  assert('normalize nbsp',        normalizeText('hello\u00A0world'), 'hello world');
+  assert('normalize zero-width',  normalizeText('test\u200Bvalue'),  'testvalue');
+  assert('normalize soft-hyphen', normalizeText('co\u00ADop'),       'coop');
+  assert('normalize en-dash',     normalizeText('2024\u20132025'),    '2024-2025');
+
+  // --- validateIBAN ---
+  assert('valid NL IBAN',                   validateIBAN('NL91ABNA0417164300'),     true);
+  assert('invalid NL IBAN (wrong check)',   validateIBAN('NL00ABNA0417164300'),     false);
+  assert('valid DE IBAN',                   validateIBAN('DE89370400440532013000'), true);
+
+  // --- extractIBAN ---
+  assert('IBAN with spaces',    extractIBAN('Rekening: NL91 ABNA 0417 1643 00'), 'NL91ABNA0417164300');
+  assert('IBAN no spaces',      extractIBAN('IBAN: NL91ABNA0417164300'),          'NL91ABNA0417164300');
+  assert('no IBAN in text',     extractIBAN('Just some random text here'),        null);
+  assert('invalid IBAN skipped',
+    extractIBAN('NL00ABNA0417164300 and NL91ABNA0417164300'),
+    'NL91ABNA0417164300'
+  );
+
+  // --- extractAmount ---
+  assert('Dutch locale EUR',  extractAmount('Totaal: EUR 1.234,56'),              1234.56);
+  assert('Euro sign',         extractAmount('Te betalen: \u20AC99,95'),           99.95);
+  assert('English locale',    extractAmount('Amount due: 1,234.56'),              1234.56);
+  assert('Plain EUR',         extractAmount('EUR 100'),                           100);
+  assert('no amount',         extractAmount('No numbers related to payment'),     null);
+
+  // --- extractName ---
+  assert('t.n.v. label',       extractName('t.n.v. Acme B.V.'),              'Acme B.V.');
+  assert('begunstigde label',  extractName('Begunstigde: Jan de Vries'),      'Jan de Vries');
+  assert('no name found',      extractName('Just some random text'),          null);
+  assert('name truncated to 70',
+    extractName('naam: ' + 'A'.repeat(80)).length,
+    70
+  );
+
+  console.log('\n' + passed + ' passed, ' + failed + ' failed');
+  return { passed: passed, failed: failed };
+}
+
+// Run tests: open browser console and type runTests()
+</script>
+</body>
+</html>
