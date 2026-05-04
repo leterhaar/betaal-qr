@@ -43,11 +43,11 @@ Plans:
   3. A QR code appears at minimum 200x200px after clicking Generate, and it scans correctly in the Bunq mobile app to pre-fill a SEPA credit transfer with correct values
   4. User can copy the QR code image to clipboard using the copy button
   5. App follows OS dark/light mode preference automatically
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 **UI hint**: yes
 
 Plans:
-- [ ] 02-01-PLAN.md — Form UI with paste-to-extract, editable fields, inline validation, QR generation at 200x200px
+- [x] 02-01-PLAN.md — Form UI with paste-to-extract, editable fields, inline validation, QR generation at 200x200px
 - [ ] 02-02-PLAN.md — Copy to clipboard, dark/light mode, banking app scan verification
 
 ### Phase 3: Wero QR
@@ -67,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Core Logic | 2/2 | Complete | 2026-03-23 |
-| 2. Full App | 0/2 | Not started | - |
+| 2. Full App | 1/2 | In Progress|  |
 | 3. Wero QR | 0/? | Not started | - |

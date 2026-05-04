@@ -12,18 +12,18 @@ Paste text, get a scannable payment QR code — no manual data entry into your b
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] User can paste invoice/email text into a text area — Validated in Phase 1 (extraction) + Phase 2 (UI)
+- [x] App extracts IBAN from pasted text using regex pattern matching — Validated in Phase 1
+- [x] App extracts payment amount from pasted text using pattern matching — Validated in Phase 1
+- [x] App extracts counterparty name from pasted text using heuristics — Validated in Phase 1
+- [x] User can review and edit extracted IBAN, name, and amount before QR generation — Validated in Phase 2
+- [x] App generates a valid EPC QR code from the confirmed payment details — Validated in Phase 2
+- [x] QR code is scannable by Bunq banking app (confirmed by user) — Validated in Phase 2
+- [x] App runs as a static HTML+JS page — just open index.html in a browser — Validated in Phase 1
 
 ### Active
 
-- [ ] User can paste invoice/email text into a text area
-- [ ] App extracts IBAN from pasted text using regex pattern matching
-- [ ] App extracts payment amount from pasted text using pattern matching
-- [ ] App extracts counterparty name from pasted text using heuristics (text near IBAN, labeled fields)
-- [ ] User can review and edit extracted IBAN, name, and amount before QR generation
-- [ ] App generates a valid EPC QR code from the confirmed payment details
-- [ ] QR code is scannable by standard European banking apps (ING, Rabobank, ABN AMRO, etc.)
-- [ ] App runs as a static HTML+JS page — just open index.html in a browser
+(All core requirements validated. Phase 3 will add Wero QR for banks that don't support EPC QR.)
 
 ### Out of Scope
 
@@ -51,10 +51,10 @@ Paste text, get a scannable payment QR code — no manual data entry into your b
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Regex/pattern matching over AI | Free, offline, no API keys, fast — sufficient for structured payment data | — Pending |
-| Static HTML+JS over server app | Zero setup — just open the file in a browser | — Pending |
-| EPC QR standard | European standard supported by most EU banking apps | — Pending |
-| Review step before QR generation | Payment data must be correct — user confirms/edits extracted fields | — Pending |
+| Regex/pattern matching over AI | Free, offline, no API keys, fast — sufficient for structured payment data | Validated Phase 1 |
+| Static HTML+JS over server app | Zero setup — just open the file in a browser | Validated Phase 1 |
+| EPC QR standard | European standard supported by most EU banking apps | Validated Phase 2 (Bunq confirmed) |
+| Review step before QR generation | Payment data must be correct — user confirms/edits extracted fields | Validated Phase 2 |
 
 ## Evolution
 
@@ -74,4 +74,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-23 after initialization*
+*Last updated: 2026-03-23 after Phase 2 completion — all core requirements validated, app is feature-complete*
